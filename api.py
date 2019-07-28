@@ -6,26 +6,31 @@ from string import ascii_lowercase, ascii_uppercase
 
 
 app = Flask(__name__)
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 app.config['SECRET_KEY'] = 'thekeyboardcat'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://lucas:passwd@localhost/shorturl'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
 db = SQLAlchemy(app)
+
 
 class Urls(db.model):
     id_url = db.Column(db.Integer, primary_key=True)
-    # url is unique because if an url is already in the db the same shorturl is supplied
     url = db.Column(db.String(1000), unique=True)
     # unique because if there were >1 there'd be conflicts
     shortenend_url = db.Column(db.String(50), unique=True)
     # 1 = random, 2 = custom
     type = db.Column(db.Integer)
 
+
 class Url:
     def __init__(self, url):
         self.url = str(url)
 
     def shorten(self, size='8'):
-	"""Shotens an URL, sets self.shortenend and returns shotened URL, sets type to random(1)"""
+        """Shotens an URL
+
+        sets self.shortenend and returns shotened URL, sets type to random(1)
+        """
         # upper/lower case and nums
         chars = ascii_uppercase + ascii_lowercase + '0123456789'
 
@@ -49,15 +54,13 @@ class Url:
 
     def persist(self):
         """Saves object to the db."""
-        try:
-            Urls(url=self.url, shortenend_url=self.shortenend_url, type=2)
-            db.session.add(_url)
-            db.session.commit()
-            logger.info("Saved url: {}, short: {}, id: {}".format(self.url,self.shortenend_url,self.id_url))
-            return True
-        except SQLAlchemyError as error:
-            logger.error(error.args)
-            return False
+        _url = Urls(
+                url=self.url,
+                shortenend_url=self.shortenend_url,
+                type=2)
+        db.session.add(_url)
+        db.session.commit()
+        return True
 
     @staticmethod
     def get_from_id(id_url):
@@ -68,7 +71,7 @@ class Url:
         obj.url = q.url
         obj.shortenend_url = q.shortenend_url
         obj.type = q.type
-        return self
+        return obj
 
     @staticmethod
     def get_from_url(url, type=1):
@@ -92,6 +95,7 @@ class Url:
         obj.type = q.type
         return obj
 
+
 @app.route('/shorten', methods=['POST'])
 def shorten_url():
     """Shortens url."""
@@ -108,12 +112,13 @@ def shorten_url():
 
     return jsonfy({
         'msg': 'Ok',
-        'method': 'new'
+        'method': 'new',
         'url': _url.shortenend
         })
 
+
 @app.route('/u/<url>', methods=['GET'])
-def redirect(url):
+def redirect_url(url):
     """Returns the actual URL."""
     try:
         _url = Url.get_from_url(url=url, type=1).url
@@ -127,6 +132,8 @@ def redirect(url):
             'msg': 'ok',
             'url': _url
         })
+
+
 @app.route('/c/<url>', methods=['GET'])
 def redirect_custom(url):
     """Returns custom url."""
@@ -134,14 +141,15 @@ def redirect_custom(url):
         _url = Url.get_from_url(url=url, type=2).url
     except AttributeError:
         return jsonfy({
-                'msg':'not found',
+                'msg': 'not found',
                 'url': None
             })
 
     return jsonfy({
                 'msg': 'ok',
                 'url': _url
-            )}
+            })
+
 
 if __name__ == '__main__':
     # binds to port if defined else defaults to 8000
