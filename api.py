@@ -213,4 +213,6 @@ def redirect_custom(url):
 if __name__ == '__main__':
     # binds to port if defined else defaults to 8000
     port = int(os.environ.get('PORT', 8000))
-    app.run(debug=True, port=port)
+    production = os.environ.get('PROD', None)
+    debug = False if production else True
+    app.run(debug=debug, port=port)
