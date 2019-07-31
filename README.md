@@ -12,7 +12,7 @@ Make a post request to the /shorten endpoint. Include a JSON formatted like bell
 
 ```json
 {
-    'url': 'https://example.com/0'
+    "url": "https://example.com/0"
 }
 ```
 
@@ -20,8 +20,8 @@ The above will return
 
 ```json
 {
-    'msg': 'ok',
-    'url': 'a2jnc'
+    "msg": "ok",
+    "url": "a2jnc"
 }
 ```
 
@@ -31,8 +31,8 @@ Make a post request to the /custom endpoint. Include a JSON formatted like bello
 
 ```json
 {
-    'url': 'https://example.com/1',
-    'custom_url': 'test'
+    "url": "https://example.com/1",
+    "custom_url": "test"
 }
 ```
 
@@ -40,9 +40,9 @@ The above will return a JSON
 
 ```json
 {
-    'msg': 'ok',
-    'url': 'https://example.com/1',  <- Given URL
-    'custom_url': 'test' <- given custom URL
+    "msg": "ok",
+    "url": "https://example.com/1", 
+    "custom_url": "test"
 }
 ```
 
@@ -60,8 +60,8 @@ This will return a JSON
 
 ```json
 {
-    'msg': 'ok',
-    'url': 'https://example.com/0'
+    "msg": "ok",
+    "url": "https://example.com/0"
 }
 ```
 
@@ -75,8 +75,8 @@ This will return a JSON
 
 ```json
 {
-    'msg': 'ok',
-    'url': 'https://example.com/1'
+    "msg": "ok",
+    "url": "https://example.com/1"
 }
 ```
 
