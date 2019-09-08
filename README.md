@@ -105,7 +105,12 @@ Then install the requirements
 pip install requirements.txt
 ```
 
-And make sure to install sqlite
+And make sure to install sqlite and create the necessary tables
+
+```python
+>>>from api import db
+>>>db.create_all()
+```
 
 After that just do
 
