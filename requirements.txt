@@ -1,5 +1,2 @@
 flask
 flask_sqlalchemy
-os
-random
-string
