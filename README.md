@@ -8,11 +8,11 @@ There are two options you can take, use a custom url or generate a random one
 
 ### Random aproach
 
-Make a post request to the /shorten endpoint. Include a JSON formatted like bellow.
+Make a POST to /random. include a JSON formatted like bellow.
 
 ```json
 {
-    "url": "https://example.com/0"
+  "url": "https://example.com/0"
 }
 ```
 
@@ -20,19 +20,38 @@ The above will return
 
 ```json
 {
-    "msg": "ok",
-    "url": "a2jnc"
+  "isError": false,
+  "shortenedUrl": "SaBopD",
+  "url": "https://example.com/0"
+}
+```
+
+To get the original URL, make a GET to /, include a JSON formatted like bellow.
+
+```json
+{
+  "shortenedUrl": "testeeeee"
+}
+```
+
+The above will return
+
+```json
+{
+  "isError": false,
+  "shortenedUrl": "testeeeee",
+  "url": "google.comgergregre"
 }
 ```
 
 ### Custom aproach
 
-Make a post request to the /custom endpoint. Include a JSON formatted like bellow
+Make a post request to the /custom endpoint. include a JSON formatted like bellow
 
 ```json
 {
-    "url": "https://example.com/1",
-    "custom_url": "test"
+  "url": "https://example.com/1",
+  "custom_url": "test"
 }
 ```
 
@@ -40,84 +59,75 @@ The above will return a JSON
 
 ```json
 {
-    "msg": "ok",
-    "url": "https://example.com/1", 
-    "custom_url": "test"
+  "msg": "ok",
+  "url": "https://example.com/1",
+  "custom_url": "test"
 }
 ```
 
-## How to use this data
-
-The usage is going to depend on which approach you chose
-
-### Random approach
-
-Make a GET request to /u/\<random-url-here>
-
-For example, GET /u/a2jnc
-
-This will return a JSON
+To get the original URL, make a GET to /, include a JSON formatted like bellow.
 
 ```json
 {
-    "msg": "ok",
-    "url": "https://example.com/0"
+  "shortenedUrl": "test"
 }
 ```
 
-### Custom approach
-
-Make a GET request to /c/\<custom-url-here>
-
-For example, GET /c/test
-
-This will return a JSON
+The above will return
 
 ```json
 {
-    "msg": "ok",
-    "url": "https://example.com/1"
+  "isError": false,
+  "shortenedUrl": "testeeeee",
+  "url": "https://example.com/1"
 }
 ```
 
 # Setup
 
-## Setup a virtual envoriment
+## Setup a [virtual envoriment](https://github.com/pypa/virtualenv)
 
-```
+```sh
 virtualenv pyShortUrl
 ```
+
 or
-```python
+
+```sh
 python -m virtualenv pyShortUrl
 ```
 
 Clone the repo
 
-```git
-mkdir src
-cd src/
-git clone https://github.com/ramenbroth/pyShortURL
+```sh
+mkdir app
+git clone https://github.com/ramenbroth/pyShortURL app
+cd app/
+```
+
+Activate your virtual environment
+
+```sh
+source ../bin/activate.fish # replace .fish according to the shell you're using
 ```
 
 Then install the requirements
+
 ```
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
-And make sure to install sqlite and create the necessary tables
+And make sure to create the necessary tables
+
+Open a python shell and run
 
 ```python
->>>from api import db
->>>db.create_all()
+>>>import api
+>>>api.setup_database()
 ```
 
-After that just do
+After that just run
 
+```sh
+flask run
 ```
-python api.py
-```
-
-Note that by default the api runs on port 8000, if you want to change that just set the enviroment variable "PORT" to whatever port you want it to run on and restart the api.
-
-By default debugging is enabled, set the enviroment variable "PROD" to 'true' to disable it.
