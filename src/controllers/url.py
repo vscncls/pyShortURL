@@ -30,7 +30,7 @@ def get_url():
 
     return jsonify({
         'isError': False,
-        'url': url['url'],
+        'url': url.url,
         'shortenedUrl': request.json['shortenedUrl']
     })
 
@@ -50,24 +50,18 @@ def random_url_post():
 
     url = Url(
         url=request.json['url'],
-        url_type=1,
-        shortenend_url=get_random_url()
+        url_type=1
     )
 
     # If url is already in db, use that one instead
     db_url = Url.query.filter_by(url=request.json['url'], url_type=1).first()
-    url = db_url or url
+    db_url = db_url and db_url.shortenend_url
+    url.shortenend_url = db_url or get_random_url()
 
-    # Only checks if shortened url is not duplicate if its a new URL
-    while not db_url:
-        q = Url.query.filter_by(
-            shortenend_url=url.shortenend_url).first()
-        if not q:
-            break
-        url.shortenend_url = get_random_url()
-    print('ijkgeriojg', url)
-    db.session.add(url)
-    db.session.commit()
+    # Only insert if the url is new
+    if not db_url:
+        db.session.add(url)
+        db.session.commit()
 
     return jsonify({
         'isError': False,
